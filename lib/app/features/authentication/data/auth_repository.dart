@@ -1,0 +1,102 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:muto_driver_app/app/features/authentication/data/models/document_upload.dart';
+import 'package:muto_driver_app/app/features/authentication/data/models/user_model.dart';
+
+class AuthRepository {
+  final Dio _dio;
+
+  AuthRepository({required Dio dio}) : _dio = dio;
+
+  _saveSession({required String token}) {
+    var storage = const FlutterSecureStorage();
+    storage.write(key: 'token', value: token);
+  }
+
+  Future<UserModel> login({
+    required String email,
+    required String password,
+  }) async {
+    final response = await _dio.post(
+      '/auth/login',
+      data: {
+        'email': email,
+        'password': password,
+      },
+      options: Options(
+        headers: {
+          'Accept': 'application/json',
+        },
+      ),
+    );
+    await _saveSession(token: response.data['token']);
+    return UserModel.fromJson(response.data['user']);
+  }
+
+  Future<UserModel> getAuthenticatedUser() async {
+    final response = await _dio.get('/auth/me',
+        options: Options(
+          headers: {
+            'Accept': 'application/json',
+          },
+        ));
+    return UserModel.fromJson(response.data);
+  }
+
+  Future<Response> register({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String phone,
+    required String password,
+    required String passwordConfirmation,
+    required String idCardNumber,
+    required String driverLicenseNumber,
+    required String address,
+    List<DocumentUpload>? documents,
+  }) async {
+    final formData = FormData.fromMap({
+      'first_name': firstName,
+      'last_name': lastName,
+      'email': email,
+      'phone': phone,
+      'role': "courier",
+      'password': password,
+      'password_confirmation': passwordConfirmation,
+      'id_card_number': idCardNumber,
+      'driver_license_number': driverLicenseNumber,
+      'address': address,
+    });
+
+    // Add documents if provided
+    if (documents != null) {
+      for (int i = 0; i < documents.length; i++) {
+        final doc = documents[i];
+        formData.fields.add(MapEntry('documents[$i][type]', doc.type));
+
+        if (doc.file != null) {
+          final multipartFile = await MultipartFile.fromFile(
+            doc.file!.path,
+            filename: doc.file!.path.split('/').last,
+            contentType:
+                MediaType('image', 'jpeg'), // Adjust based on file type
+          );
+          formData.files.add(MapEntry('documents[$i][file]', multipartFile));
+        }
+      }
+    }
+
+    final response = await _dio.post(
+      '/auth/register',
+      data: formData,
+      options: Options(
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      ),
+    );
+
+    return response;
+  }
+}

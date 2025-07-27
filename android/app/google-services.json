@@ -1,0 +1,134 @@
+{
+  "project_info": {
+    "project_number": "683198013079",
+    "project_id": "anubis-baf99",
+    "storage_bucket": "anubis-baf99.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:683198013079:android:35b49c0ff390c9ea07d3d2",
+        "android_client_info": {
+          "package_name": "com.muto.driver_app.muto_driver_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "683198013079-rjb1jns7bd1bjau709khir4pq0g34hhh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIl16lUKTyQxUOajHTC78-ZtxklKcgwrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "683198013079-rjb1jns7bd1bjau709khir4pq0g34hhh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "683198013079-k3r27s8k17kjdteulra10n8f0pl8cfn2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ntechservices.anubis"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:683198013079:android:8f3e6bcf3a19f44707d3d2",
+        "android_client_info": {
+          "package_name": "com.ntech_services.anubis"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "683198013079-pm1ku6pf66283dq8uhcguqih42a5tdn5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ntech_services.anubis",
+            "certificate_hash": "79ffdf6c42abf227047ce04da6d5d7b0781a8a84"
+          }
+        },
+        {
+          "client_id": "683198013079-rjb1jns7bd1bjau709khir4pq0g34hhh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIl16lUKTyQxUOajHTC78-ZtxklKcgwrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "683198013079-rjb1jns7bd1bjau709khir4pq0g34hhh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "683198013079-k3r27s8k17kjdteulra10n8f0pl8cfn2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ntechservices.anubis"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:683198013079:android:bef9e867a83c964f07d3d2",
+        "android_client_info": {
+          "package_name": "com.ntech_services.chat_demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "683198013079-g23tdf9ccadk90mea4oobhfcfhaen7gv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ntech_services.chat_demo",
+            "certificate_hash": "79ffdf6c42abf227047ce04da6d5d7b0781a8a84"
+          }
+        },
+        {
+          "client_id": "683198013079-rjb1jns7bd1bjau709khir4pq0g34hhh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIl16lUKTyQxUOajHTC78-ZtxklKcgwrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "683198013079-rjb1jns7bd1bjau709khir4pq0g34hhh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "683198013079-k3r27s8k17kjdteulra10n8f0pl8cfn2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ntechservices.anubis"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
