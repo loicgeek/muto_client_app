@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:muto_driver_app/app/features/authentication/data/models/document_upload.dart';
@@ -8,9 +9,9 @@ class AuthRepository {
   final Dio _dio;
 
   AuthRepository({required Dio dio}) : _dio = dio;
-
-  _saveSession({required String token}) {
+  Future<void> _saveSession({required String token}) async {
     var storage = const FlutterSecureStorage();
+    await FlutterForegroundTask.saveData(key: 'token', value: token);
     storage.write(key: 'token', value: token);
   }
 

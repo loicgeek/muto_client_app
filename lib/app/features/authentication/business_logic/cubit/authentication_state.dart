@@ -1,7 +1,10 @@
 part of 'authentication_cubit.dart';
 
 @immutable
-sealed class AuthenticationState {}
+sealed class AuthenticationState {
+  final UserModel? user;
+  const AuthenticationState({this.user});
+}
 
 final class AuthenticationInitial extends AuthenticationState {}
 
@@ -15,6 +18,5 @@ class AuthenticationSuccess extends AuthenticationState {
 
 class AuthenticationFailure extends AuthenticationState {
   final String message;
-
-  AuthenticationFailure({required this.message});
+  const AuthenticationFailure({required this.message});
 }
