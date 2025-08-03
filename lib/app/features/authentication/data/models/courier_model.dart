@@ -10,9 +10,9 @@ class CourierModel {
   final String? status;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  final int? online;
-  final String? lastLatitude;
-  final String? lastLongitude;
+  bool? online;
+  final double? lastLatitude;
+  final double? lastLongitude;
   final DateTime? lastLocationUpdatedAt;
 
   CourierModel({
@@ -49,8 +49,8 @@ class CourierModel {
           ? DateTime.parse(json['updated_at'])
           : null,
       online: json['online'],
-      lastLatitude: json['last_latitude'],
-      lastLongitude: json['last_longitude'],
+      lastLatitude: double.tryParse("${json['last_latitude']}") ?? null,
+      lastLongitude: double.tryParse("${json['last_longitude']}") ?? null,
       lastLocationUpdatedAt: json['last_location_updated_at'] != null
           ? DateTime.parse(json['last_location_updated_at'])
           : null,

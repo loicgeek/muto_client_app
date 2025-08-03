@@ -1,12 +1,16 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:muto_driver_app/app/core/router/app_router.gr.dart';
 import 'package:muto_driver_app/app/core/service_locator.dart';
 import 'package:muto_driver_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
 import 'package:muto_driver_app/app/features/home/business_logic/current_delivery/current_delivery_cubit.dart';
 import 'package:muto_driver_app/app/features/home/data/models/delivery_model.dart';
 import 'package:muto_driver_app/app/features/notifications/data/services/location_service.dart';
 import 'package:muto_driver_app/app/ui/app_theme.dart';
+import 'package:muto_driver_app/app/ui/ui_utils.dart';
+import 'package:latlong2/latlong.dart';
 
 @RoutePage()
 class DriverHomeScreen extends StatefulWidget {
@@ -164,6 +168,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     );
   }
 
+  void _refreshScreen() {}
   @override
   void dispose() {
     _slideController.dispose();
@@ -187,7 +192,105 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                   children: [
                     // Add top padding when notification is visible
                     if (hasPendingRequest) const SizedBox(height: 160),
-                    _buildDriverStatusCard(),
+                    BlocBuilder<AuthenticationCubit, AuthenticationState>(
+                      bloc: _authenticationCubit,
+                      builder: (context, state) {
+                        var driverName =
+                            '${state.user?.firstName ?? ""} ${state.user?.lastName ?? ""}';
+                        var isOnline = state.user?.courier?.online ?? false;
+                        return Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: AppTheme.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 25,
+                                    backgroundColor: AppTheme.primaryBlue
+                                        .withValues(alpha: 0.1),
+                                    child: Text(
+                                      driverName
+                                          .split(' ')
+                                          .map((e) => e.isNotEmpty ? e[0] : '')
+                                          .join(''),
+                                      style: AppTheme.bodyLarge.copyWith(
+                                        color: AppTheme.primaryBlue,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Hello, $driverName',
+                                          style: AppTheme.headingMedium,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              width: 8,
+                                              height: 8,
+                                              decoration: BoxDecoration(
+                                                color: isOnline
+                                                    ? Colors.green
+                                                    : Colors.red,
+                                                shape: BoxShape.circle,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              'Status: ${isOnline ? 'Online' : 'Offline'}',
+                                              style:
+                                                  AppTheme.bodyMedium.copyWith(
+                                                color: isOnline
+                                                    ? Colors.green
+                                                    : Colors.red,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Switch(
+                                    value: isOnline,
+                                    onChanged: (value) async {
+                                      await getIt
+                                          .get<AuthenticationCubit>()
+                                          .updateCourierOnlineStatus(
+                                              isOnline: value);
+                                      UiUtils.showSnackbarSuccess(
+                                          context, "Status updated");
+                                    },
+                                    activeColor: AppTheme.primaryBlue,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+
                     const SizedBox(height: 16),
                     if (state is ActivateDeliveryLoading) ...[
                       const Center(
@@ -203,7 +306,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                       _buildNoDeliveryCard(),
                     ],
                     const SizedBox(height: 16),
-                    _buildEarningsCard(),
+                    //  _buildEarningsCard(),
                   ],
                 );
               },
@@ -492,106 +595,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     );
   }
 
-  Widget _buildDriverStatusCard() {
-    return BlocBuilder<AuthenticationCubit, AuthenticationState>(
-      bloc: _authenticationCubit,
-      builder: (context, state) {
-        var driverName =
-            '${state.user?.firstName ?? ""} ${state.user?.lastName ?? ""}';
-        var isOnline = state.user?.courier?.online == 1;
-        return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: AppTheme.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 25,
-                    backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
-                    child: Text(
-                      driverName.split(' ').map((e) => e[0]).join(''),
-                      style: AppTheme.bodyLarge.copyWith(
-                        color: AppTheme.primaryBlue,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hello, $driverName',
-                          style: AppTheme.headingMedium,
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: isOnline ? Colors.green : Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Status: ${isOnline ? 'Online' : 'Offline'}',
-                              style: AppTheme.bodyMedium.copyWith(
-                                color: isOnline ? Colors.green : Colors.red,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Switch(
-                    value: isOnline,
-                    onChanged: (value) {
-                      setState(() {
-                        isOnline = value;
-                        if (value && !hasPendingRequest) {
-                          // Simulate new request when going online
-                          Future.delayed(Duration(seconds: 2), () {
-                            if (mounted) {
-                              setState(() {
-                                hasPendingRequest = true;
-                                acceptanceCountdown = 45;
-                              });
-                              _showDeliveryRequestNotification();
-                            }
-                          });
-                        }
-                      });
-                    },
-                    activeColor: AppTheme.primaryBlue,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildCurrentDeliveryCard(DeliveryModel delivery) {
     return Container(
       width: double.infinity,
@@ -825,7 +828,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () {
-                  // Handle navigate
+                  // context.router.push(DeliveryTrackingRoute());
+                  var delivery =
+                      context.read<CurrentDeliveryCubit>().state.delivery!;
+                  context.router.push(
+                    DeliveryTrackingRoute(),
+                  );
                 },
                 icon: const Icon(Icons.navigation),
                 label: Text('Navigate'),

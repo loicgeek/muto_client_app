@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:muto_driver_app/app/core/presentation/app_initialization_screen.dart';
 
 import 'app_router.gr.dart';
 
@@ -20,6 +19,8 @@ class AppRouter extends RootStackRouter {
           AutoRoute(page: DriverEarningsRoute.page),
           AutoRoute(page: DriverProfileRoute.page),
         ]),
+        AutoRoute(page: DeliveryTrackingRoute.page),
+        AutoRoute(page: StepByStepNavigationRoute.page),
       ];
 
   @override

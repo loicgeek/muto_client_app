@@ -63,10 +63,6 @@ class NotificationService {
       sound: true,
     );
 
-    messaging.getToken().then((token) {
-      print('FCM Token: $token');
-    });
-
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {

@@ -1,7 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:muto_driver_app/app/core/network/api_error.dart';
+import 'package:muto_driver_app/app/core/router/app_router.gr.dart';
+import 'package:muto_driver_app/app/core/service_locator.dart';
+import 'package:muto_driver_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
 import 'package:muto_driver_app/app/ui/app_theme.dart';
+import 'package:muto_driver_app/app/ui/loading_overlay.dart';
+import 'package:muto_driver_app/app/ui/ui_utils.dart';
 
 // Assuming your AppTheme is imported
 
@@ -55,6 +62,14 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   };
 
   int activeVehicleIndex = 0; // Default to first vehicle
+
+  late AuthenticationCubit _authenticationCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _authenticationCubit = getIt.get<AuthenticationCubit>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -587,23 +602,40 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   }
 
   Widget _buildLogoutButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: OutlinedButton.icon(
-        onPressed: () {
-          _showLogoutDialog();
-        },
-        icon: const Icon(Icons.logout),
-        label: const Text('Logout'),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: Colors.red,
-          side: const BorderSide(color: Colors.red),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+    return BlocConsumer<AuthenticationCubit, AuthenticationState>(
+      bloc: _authenticationCubit,
+      listener: (context, state) {},
+      builder: (context, state) {
+        return SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () async {
+              var result = await _showLogoutDialog();
+              if (result == true) {
+                try {
+                  await context.read<LoadingController>().wrapWithLoading(() {
+                    return _authenticationCubit.logout();
+                  });
+                  context.router.replaceAll([LoginRoute()]);
+                } catch (e) {
+                  UiUtils.showSnackbarError(
+                      context, ApiError.fromResponse(e).message);
+                }
+              }
+            },
+            icon: const Icon(Icons.logout),
+            label: const Text('Logout'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.red,
+              side: const BorderSide(color: Colors.red),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -715,8 +747,8 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
     );
   }
 
-  void _showLogoutDialog() {
-    showDialog(
+  Future<bool?> _showLogoutDialog() async {
+    return showDialog<bool?>(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -729,7 +761,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(context, true);
                 // Handle logout
               },
               style: ElevatedButton.styleFrom(

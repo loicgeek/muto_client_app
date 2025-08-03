@@ -7,13 +7,13 @@ class DeliveryModel {
   final int? courierId;
   final int? vehicleId;
   final String? pickupAddress;
-  final String? pickupLatitude;
-  final String? pickupLongitude;
+  final double? pickupLatitude;
+  final double? pickupLongitude;
   final DateTime? pickupScheduledAt;
   final DateTime? pickupActualAt;
   final String? dropoffAddress;
-  final String? dropoffLatitude;
-  final String? dropoffLongitude;
+  final double? dropoffLatitude;
+  final double? dropoffLongitude;
   final DateTime? dropoffScheduledAt;
   final DateTime? dropoffActualAt;
   final String? weightKg;
@@ -85,8 +85,8 @@ class DeliveryModel {
       courierId: json['courier_id'],
       vehicleId: json['vehicle_id'],
       pickupAddress: json['pickup_address'],
-      pickupLatitude: json['pickup_latitude'],
-      pickupLongitude: json['pickup_longitude'],
+      pickupLatitude: double.tryParse("${json['pickup_latitude']}"),
+      pickupLongitude: double.tryParse("${json['pickup_longitude']}"),
       pickupScheduledAt: json['pickup_scheduled_at'] != null
           ? DateTime.parse(json['pickup_scheduled_at'])
           : null,
@@ -94,8 +94,8 @@ class DeliveryModel {
           ? DateTime.parse(json['pickup_actual_at'])
           : null,
       dropoffAddress: json['dropoff_address'],
-      dropoffLatitude: json['dropoff_latitude'],
-      dropoffLongitude: json['dropoff_longitude'],
+      dropoffLatitude: double.tryParse("${json['dropoff_latitude']}"),
+      dropoffLongitude: double.tryParse("${json['dropoff_longitude']}"),
       dropoffScheduledAt: json['dropoff_scheduled_at'] != null
           ? DateTime.parse(json['dropoff_scheduled_at'])
           : null,

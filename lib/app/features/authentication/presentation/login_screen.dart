@@ -1,13 +1,19 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 import 'package:muto_driver_app/app/core/router/app_router.gr.dart';
 import 'package:muto_driver_app/app/core/service_locator.dart';
 import 'package:muto_driver_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
 import 'package:muto_driver_app/app/features/authentication/data/auth_repository.dart';
 import 'package:muto_driver_app/app/features/authentication/presentation/register_screen.dart';
 import 'package:muto_driver_app/app/features/home/presentation/home_screen.dart';
+import 'package:muto_driver_app/app/features/notifications/data/notification_repository.dart';
 import 'package:muto_driver_app/app/ui/app_theme.dart';
 import 'package:muto_driver_app/app/ui/ui_utils.dart';
 import 'package:muto_driver_app/app/ui/validators.dart';
@@ -74,12 +80,36 @@ class _LoginScreenState extends State<LoginScreen> {
     context.router.push(RegisterRoute());
   }
 
+  void _saveNotificationToken() async {
+    final token = await FirebaseMessaging.instance.getToken();
+    if (token != null) {
+      String? deviceName;
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      final mobileDeviceIdentifier =
+          await MobileDeviceIdentifier().getDeviceId();
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        deviceName = androidInfo.model;
+      } else if (Platform.isIOS) {
+        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        deviceName = iosInfo.utsname.machine;
+      }
+
+      getIt.get<NotificationRepository>().saveNotificationToken(
+            token: token,
+            deviceId: mobileDeviceIdentifier ?? "",
+            deviceName: deviceName ?? '',
+          );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthenticationCubit, AuthenticationState>(
       bloc: _authenticationCubit,
       listener: (context, state) {
         if (state is AuthenticationSuccess) {
+          _saveNotificationToken();
           context.router.pushAndPopUntil(
             HomeRoute(),
             predicate: (route) => false,

@@ -224,7 +224,10 @@ class LocationTaskHandler extends TaskHandler {
 
       final dio = Dio(BaseOptions(
         baseUrl: AppConfig.baseUrl,
-        headers: {'Authorization': 'Bearer $token'},
+        headers: {
+          'Authorization': 'Bearer $token',
+          "accept": "application/json"
+        },
       ));
 
       final body = {

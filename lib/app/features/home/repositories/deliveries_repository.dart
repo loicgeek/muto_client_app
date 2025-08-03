@@ -23,6 +23,21 @@ class DeliveriesRepository {
     }
   }
 
+  // Single method to fetch and filter deliveries with all options
+  Future<PaginatedData<DeliveryModel>> forCourier(ApiFilter filter) async {
+    try {
+      final queryParams = filter.toQueryParameters();
+      filter.withRelations(['courier', 'client', 'vehicle']);
+      final response = await _dio.get(
+        '/deliveries',
+        queryParameters: queryParams,
+      );
+      return PaginatedData.fromJson(response.data, DeliveryModel.fromJson);
+    } on DioException catch (e) {
+      throw _handleDioException(e);
+    }
+  }
+
   Future<DeliveryModel> acceptDelivery(int deliveryId, int courierId) async {
     try {
       final response = await _dio.post('/deliveries/$deliveryId/assign', data: {

@@ -167,6 +167,11 @@ class ApiFilter {
   int _perPage = 20;
   int _page = 1;
 
+  ApiFilter addFilter(Filter filter) {
+    _filters.add(filter);
+    return this;
+  }
+
   // Pagination methods
   ApiFilter perPage(int count) {
     _perPage = count;

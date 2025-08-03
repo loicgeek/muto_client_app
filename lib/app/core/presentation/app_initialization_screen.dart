@@ -22,10 +22,9 @@ class _AppInitializationState extends State<AppInitializationScreen> {
         bloc: getIt.get<AuthenticationCubit>(),
         listener: (context, state) {
           if (state is AuthenticationSuccess) {
-            if (state.user.courier != null) {
-              context
-                  .read<CurrentDeliveryCubit>()
-                  .checkCurrentDelivery(courierId: state.user.courier?.id ?? 0);
+            if (state.user?.courier != null) {
+              context.read<CurrentDeliveryCubit>().checkCurrentDelivery(
+                  courierId: state.user?.courier?.id ?? 0);
             }
             context.router
                 .pushAndPopUntil(HomeRoute(), predicate: (route) => false);

@@ -25,8 +25,7 @@ class _DriverDeliveriesScreenState extends State<DriverDeliveriesScreen>
   late DeliveriesCubit _activeDeliveriesCubit;
   late DeliveriesCubit _completedDeliveriesCubit;
   late DeliveriesCubit _failedDeliveriesCubit;
-  final ApiFilter _activeDeliveriesFilter = ApiFilter()
-    ..whereIn('status', ['assigned', 'pending']);
+  late ApiFilter _activeDeliveriesFilter;
   final ApiFilter _completedDeliveriesFilter = ApiFilter()
     ..whereIn('status', ['completed']);
   final ApiFilter _failedDeliveriesFilter = ApiFilter()
@@ -35,6 +34,11 @@ class _DriverDeliveriesScreenState extends State<DriverDeliveriesScreen>
   @override
   void initState() {
     super.initState();
+    var user = getIt.get<AuthenticationCubit>().state.user;
+    _activeDeliveriesFilter = ApiFilter().whereExact("courier_or_pending", {
+      "courier_id": user?.courier?.id,
+      "status": 'pending',
+    });
     _tabController = TabController(length: 3, vsync: this);
     _activeDeliveriesCubit =
         DeliveriesCubit(deliveriesRepository: getIt<DeliveriesRepository>());
@@ -43,8 +47,6 @@ class _DriverDeliveriesScreenState extends State<DriverDeliveriesScreen>
     _failedDeliveriesCubit =
         DeliveriesCubit(deliveriesRepository: getIt<DeliveriesRepository>());
 
-    var user = context.read<AuthenticationCubit>().state.user;
-    _activeDeliveriesFilter.whereExact('courier_id', user?.courier?.id);
     _completedDeliveriesFilter.whereExact('courier_id', user?.courier?.id);
     _failedDeliveriesFilter.whereExact('courier_id', user?.courier?.id);
   }

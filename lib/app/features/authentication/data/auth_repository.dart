@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:muto_driver_app/app/features/authentication/data/models/courier_model.dart';
 import 'package:muto_driver_app/app/features/authentication/data/models/document_upload.dart';
 import 'package:muto_driver_app/app/features/authentication/data/models/user_model.dart';
 
@@ -13,6 +14,11 @@ class AuthRepository {
     var storage = const FlutterSecureStorage();
     await FlutterForegroundTask.saveData(key: 'token', value: token);
     storage.write(key: 'token', value: token);
+  }
+
+  Future<void> _removeSession() async {
+    await FlutterForegroundTask.saveData(key: 'token', value: '');
+    await const FlutterSecureStorage().delete(key: 'token');
   }
 
   Future<UserModel> login({
@@ -35,6 +41,11 @@ class AuthRepository {
     return UserModel.fromJson(response.data['user']);
   }
 
+  Future<void> logout() async {
+    await _dio.post('/auth/logout');
+    await _removeSession();
+  }
+
   Future<UserModel> getAuthenticatedUser() async {
     final response = await _dio.get('/auth/me',
         options: Options(
@@ -43,6 +54,19 @@ class AuthRepository {
           },
         ));
     return UserModel.fromJson(response.data);
+  }
+
+  Future<CourierModel> updateCourierOnlineStatus({
+    required int id,
+    required bool isOnline,
+  }) async {
+    final response = await _dio.put(
+      '/couriers/$id',
+      data: {
+        'online': isOnline,
+      },
+    );
+    return CourierModel.fromJson(response.data);
   }
 
   Future<Response> register({

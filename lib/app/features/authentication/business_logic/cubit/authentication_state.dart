@@ -8,15 +8,15 @@ sealed class AuthenticationState {
 
 final class AuthenticationInitial extends AuthenticationState {}
 
-class AuthenticationLoading extends AuthenticationState {}
+class AuthenticationLoading extends AuthenticationState {
+  const AuthenticationLoading({super.user});
+}
 
 class AuthenticationSuccess extends AuthenticationState {
-  final UserModel user;
-
-  AuthenticationSuccess({required this.user});
+  const AuthenticationSuccess({super.user});
 }
 
 class AuthenticationFailure extends AuthenticationState {
   final String message;
-  const AuthenticationFailure({required this.message});
+  const AuthenticationFailure({required this.message, super.user});
 }

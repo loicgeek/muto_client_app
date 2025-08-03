@@ -15,7 +15,7 @@ class UserModel {
   final DateTime? verificationCodeExpiresAt;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  final CourierModel? courier;
+  CourierModel? courier;
 
   UserModel({
     this.id,

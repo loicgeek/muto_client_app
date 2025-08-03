@@ -24,14 +24,43 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     }
   }
 
+  Future<void> logout() async {
+    emit(AuthenticationLoading(user: state.user));
+    try {
+      await _authRepository.logout();
+      emit(AuthenticationInitial());
+    } catch (e) {
+      final error = ApiError.fromResponse(e);
+      emit(AuthenticationFailure(message: error.message));
+    }
+  }
+
+  Future<void> updateCourierOnlineStatus({required bool isOnline}) async {
+    emit(AuthenticationLoading(user: state.user));
+    try {
+      var courier = await _authRepository.updateCourierOnlineStatus(
+        id: state.user!.courier!.id!,
+        isOnline: isOnline,
+      );
+      var user = state.user!;
+      user.courier = courier;
+      emit(AuthenticationSuccess(user: user));
+    } catch (e) {
+      final error = ApiError.fromResponse(e);
+      emit(AuthenticationFailure(message: error.message));
+    }
+  }
+
   Future<void> checkAuth() async {
-    emit(AuthenticationLoading());
+    emit(AuthenticationLoading(user: state.user));
     try {
       final user = await _authRepository.getAuthenticatedUser();
       emit(AuthenticationSuccess(user: user));
     } catch (e) {
       final error = ApiError.fromResponse(e);
-      emit(AuthenticationFailure(message: error.message));
+      emit(AuthenticationFailure(
+        message: error.message,
+      ));
     }
   }
 }
