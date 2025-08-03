@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muto_driver_app/app/core/service_locator.dart';
 import 'package:muto_driver_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
+import 'package:muto_driver_app/app/features/home/business_logic/current_delivery/current_delivery_cubit.dart';
+import 'package:muto_driver_app/app/features/home/data/models/delivery_model.dart';
 import 'package:muto_driver_app/app/features/notifications/data/services/location_service.dart';
 import 'package:muto_driver_app/app/ui/app_theme.dart';
 
@@ -178,25 +180,33 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
         children: [
           SingleChildScrollView(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Add top padding when notification is visible
-                if (hasPendingRequest) const SizedBox(height: 160),
-                _buildDriverStatusCard(),
-                const SizedBox(height: 16),
-                if (hasActiveDelivery) ...[
-                  _buildCurrentDeliveryCard(),
-                  const SizedBox(height: 16),
-                  _buildMapPlaceholder(),
-                  const SizedBox(height: 16),
-                  _buildActionButtons(),
-                ] else ...[
-                  _buildNoDeliveryCard(),
-                ],
-                const SizedBox(height: 16),
-                _buildEarningsCard(),
-              ],
+            child: BlocBuilder<CurrentDeliveryCubit, CurrentDeliveryState>(
+              builder: (context, state) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Add top padding when notification is visible
+                    if (hasPendingRequest) const SizedBox(height: 160),
+                    _buildDriverStatusCard(),
+                    const SizedBox(height: 16),
+                    if (state is ActivateDeliveryLoading) ...[
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ] else if (state.delivery != null) ...[
+                      _buildCurrentDeliveryCard(state.delivery!),
+                      const SizedBox(height: 16),
+                      _buildMapPlaceholder(),
+                      const SizedBox(height: 16),
+                      _buildActionButtons(),
+                    ] else ...[
+                      _buildNoDeliveryCard(),
+                    ],
+                    const SizedBox(height: 16),
+                    _buildEarningsCard(),
+                  ],
+                );
+              },
             ),
           ),
           // Delivery request notification overlay
@@ -488,6 +498,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
       builder: (context, state) {
         var driverName =
             '${state.user?.firstName ?? ""} ${state.user?.lastName ?? ""}';
+        var isOnline = state.user?.courier?.online == 1;
         return Container(
           width: double.infinity,
           padding: const EdgeInsets.all(20),
@@ -581,7 +592,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
     );
   }
 
-  Widget _buildCurrentDeliveryCard() {
+  Widget _buildCurrentDeliveryCard(DeliveryModel delivery) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -623,7 +634,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                       style: AppTheme.headingMedium,
                     ),
                     Text(
-                      'Order #${currentDelivery['id']}',
+                      'Order #${delivery.id}',
                       style: AppTheme.bodySmall,
                     ),
                   ],
@@ -637,7 +648,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  'ETA ${currentDelivery['estimatedTime']}',
+                  'ETA ${delivery.durationMinutes} minutes',
                   style: AppTheme.bodySmall.copyWith(
                     color: Colors.orange[800],
                     fontWeight: FontWeight.w600,
@@ -650,14 +661,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
           _buildLocationItem(
             icon: Icons.restaurant,
             title: 'Pickup Location',
-            address: currentDelivery['pickupAddress']!,
+            address: delivery.pickupAddress ?? "",
             isCompleted: false,
           ),
           const SizedBox(height: 12),
           _buildLocationItem(
             icon: Icons.home,
             title: 'Drop-off Location',
-            address: currentDelivery['dropoffAddress']!,
+            address: delivery.dropoffAddress ?? "",
             isCompleted: false,
           ),
           const SizedBox(height: 16),
@@ -680,13 +691,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        currentDelivery['customerName']!,
+                        "${delivery.client?.firstName ?? ''} ${delivery.client?.lastName ?? ''}",
                         style: AppTheme.bodyMedium.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                       Text(
-                        'Order Value: ${currentDelivery['orderValue']}',
+                        'Order Value: ${delivery.courierFee ?? 0}',
                         style: AppTheme.bodySmall,
                       ),
                     ],

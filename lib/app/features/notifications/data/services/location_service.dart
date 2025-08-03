@@ -149,7 +149,7 @@ class LocationTaskHandler extends TaskHandler {
     _positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 10,
+        // distanceFilter: 10,
       ),
     ).listen(_onLocationUpdate);
   }
