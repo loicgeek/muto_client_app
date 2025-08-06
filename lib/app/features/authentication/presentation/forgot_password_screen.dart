@@ -1,20 +1,14 @@
-import 'dart:io';
-
 import 'package:auto_route/auto_route.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mobile_device_identifier/mobile_device_identifier.dart';
+import 'package:muto_driver_app/app/core/network/api_error.dart';
 import 'package:muto_driver_app/app/core/router/app_router.gr.dart';
 import 'package:muto_driver_app/app/core/service_locator.dart';
 import 'package:muto_driver_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
 import 'package:muto_driver_app/app/features/authentication/data/auth_repository.dart';
-import 'package:muto_driver_app/app/features/authentication/presentation/register_screen.dart';
-import 'package:muto_driver_app/app/features/home/presentation/home_screen.dart';
-import 'package:muto_driver_app/app/features/notifications/data/notification_repository.dart';
 import 'package:muto_driver_app/app/ui/app_theme.dart';
+import 'package:muto_driver_app/app/ui/loading_overlay.dart';
 import 'package:muto_driver_app/app/ui/ui_utils.dart';
 import 'package:muto_driver_app/app/ui/validators.dart';
 import 'package:muto_driver_app/app/widgets/app_button.dart';
@@ -25,20 +19,22 @@ import 'package:muto_driver_app/app/widgets/app_text_field.dart';
 // For this example, I'll include the necessary parts
 
 @RoutePage()
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ForgotPasswordScreen extends StatefulWidget {
+  const ForgotPasswordScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _codeController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
   late AuthenticationCubit _authenticationCubit;
+  bool _emailSent = false;
 
   @override
   void initState() {
@@ -50,52 +46,69 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _codeController.dispose();
     super.dispose();
   }
 
-  void _handleLogin() async {
+  void _handleForgotPassword() {
+    // Handle forgot password navigation
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Forgot password tapped')),
+    );
+  }
+
+  void _sendResetPasswordEmail() async {
     try {
       if (_formKey.currentState?.validate() ?? false) {
-        _authenticationCubit.login(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
+        setState(() {
+          _isLoading = true;
+          _emailSent = false;
+        });
+        await context.read<LoadingController>().wrapWithLoading(() {
+          return getIt
+              .get<AuthRepository>()
+              .sendResetPasswordEmail(email: _emailController.text);
+        });
+
+        setState(() {
+          _isLoading = false;
+          _emailSent = true;
+        });
+        UiUtils.showSnackbarSuccess(context, 'Email sent successfully');
       }
     } catch (e) {
       setState(() {
         _isLoading = false;
       });
+      UiUtils.showSnackbarError(context, ApiError.fromResponse(e).message);
     }
   }
 
-  void _handleForgotPassword() {
-    context.router.push(ForgotPasswordRoute());
-  }
+  void _updatePassword() async {
+    try {
+      if (_formKey.currentState?.validate() ?? false) {
+        setState(() {
+          _isLoading = true;
+        });
+        await context.read<LoadingController>().wrapWithLoading(() {
+          return getIt.get<AuthRepository>().resetPassword(
+                token: _codeController.text,
+                password: _passwordController.text,
+                email: _emailController.text,
+              );
+        });
 
-  void _handleSignUp() {
-    context.router.push(RegisterRoute());
-  }
-
-  void _saveNotificationToken() async {
-    final token = await FirebaseMessaging.instance.getToken();
-    if (token != null) {
-      String? deviceName;
-      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-      final mobileDeviceIdentifier =
-          await MobileDeviceIdentifier().getDeviceId();
-      if (Platform.isAndroid) {
-        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-        deviceName = androidInfo.model;
-      } else if (Platform.isIOS) {
-        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-        deviceName = iosInfo.utsname.machine;
+        setState(() {
+          _isLoading = false;
+        });
+        UiUtils.showSnackbarSuccess(context, 'Password updated successfully');
+        context.router.replaceAll([LoginRoute()]);
       }
-
-      getIt.get<NotificationRepository>().saveNotificationToken(
-            token: token,
-            deviceId: mobileDeviceIdentifier ?? "",
-            deviceName: deviceName ?? '',
-          );
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      UiUtils.showSnackbarError(context, ApiError.fromResponse(e).message);
     }
   }
 
@@ -103,17 +116,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthenticationCubit, AuthenticationState>(
       bloc: _authenticationCubit,
-      listener: (context, state) {
-        if (state is AuthenticationSuccess) {
-          _saveNotificationToken();
-          context.router.pushAndPopUntil(
-            HomeRoute(),
-            predicate: (route) => false,
-          );
-        } else if (state is AuthenticationFailure) {
-          UiUtils.showSnackbarError(context, state.message);
-        }
-      },
+      listener: (context, state) {},
       builder: (context, state) {
         return Scaffold(
           backgroundColor: AppTheme.lightGray,
@@ -130,110 +133,103 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Logo
                     const AppLogo(),
 
-                    const SizedBox(height: 60),
-
                     // Login Title
                     Text(
-                      'Login',
+                      'Forgot Password',
                       style: AppTheme.headingLarge,
                     ),
 
                     const SizedBox(height: 8),
 
-                    // Subtitle
-                    Text(
-                      'Enter Login Credentials',
-                      style: AppTheme.bodyMedium,
-                    ),
+                    if (!_emailSent) ...[
+                      // Subtitle
+                      Text(
+                        'Enter your email',
+                        style: AppTheme.bodyMedium,
+                      ),
 
-                    const SizedBox(height: 40),
+                      const SizedBox(height: 20),
+                      // Email Field
+                      AppTextField(
+                        labelText: 'Email',
+                        hintText: 'Enter your email',
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: FormValidators.validateEmail,
+                      ),
 
-                    // Email Field
-                    AppTextField(
-                      labelText: 'Email',
-                      hintText: 'Enter your email',
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: FormValidators.validateEmail,
-                    ),
+                      const SizedBox(height: 20),
+                    ] else ...[
+                      // Subtitle
+                      Text(
+                        'Enter the code sent to your email',
+                        style: AppTheme.bodyMedium,
+                      ),
 
-                    const SizedBox(height: 20),
-
-                    // Password Field
-                    AppTextField(
-                      labelText: 'Password',
-                      hintText: 'Enter your password',
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: AppTheme.mediumGray,
+                      const SizedBox(height: 20),
+                      AppTextField(
+                        labelText: 'Code',
+                        hintText: 'Enter the code sent to your email',
+                        controller: _codeController,
+                      ),
+                      const SizedBox(height: 20),
+                      // Password Field
+                      AppTextField(
+                        labelText: 'Password',
+                        hintText: 'Enter your password',
+                        controller: _passwordController,
+                        obscureText: _obscurePassword,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: AppTheme.mediumGray,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+
+                          return null;
                         },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
 
-                        return null;
-                      },
-                    ),
+                      const SizedBox(height: 16),
 
-                    const SizedBox(height: 16),
-
-                    // Forgot Password
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: _handleForgotPassword,
-                        child: Text(
-                          'Forgot Password?',
-                          style: AppTheme.linkText,
-                        ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _emailSent = false;
+                          });
+                        },
+                        child: Text('Send again'),
                       ),
-                    ),
+                    ],
 
                     const SizedBox(height: 32),
 
                     // Login Button
-                    AppButton(
-                      text: 'LOGIN',
-                      onPressed: _handleLogin,
-                      isLoading: state is AuthenticationLoading,
-                    ),
-
+                    if (!_emailSent) ...[
+                      AppButton(
+                        text: 'Reset Password',
+                        onPressed: _sendResetPasswordEmail,
+                        isLoading: _isLoading,
+                      ),
+                    ] else ...[
+                      AppButton(
+                        text: 'Update Password',
+                        onPressed: _updatePassword,
+                        isLoading: _isLoading,
+                      ),
+                    ],
                     const SizedBox(height: 32),
-
-                    // Sign Up Link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Don't have an account ? ",
-                          style: AppTheme.bodyMedium,
-                        ),
-                        TextButton(
-                          onPressed: _handleSignUp,
-                          style: TextButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          child: Text(
-                            'Sign Up Here',
-                            style: AppTheme.linkText,
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),

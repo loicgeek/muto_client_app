@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:meta/meta.dart';
 import 'package:muto_driver_app/app/core/network/api_error.dart';
 import 'package:muto_driver_app/app/core/network/api_filter.dart';
@@ -19,13 +20,21 @@ class CurrentDeliveryCubit extends Cubit<CurrentDeliveryState> {
         ..whereExact("courier_id", courierId)
         ..whereIn("status", ['assigned']));
       if (response.data.isEmpty) {
+        FlutterForegroundTask.removeData(key: 'current_delivery_id');
         emit(ActivateDeliverySuccess(delivery: null));
       } else {
         var deliveryDetails =
             await _deliveriesRepository.findOne(response.data.first.id!);
+        try {
+          FlutterForegroundTask.saveData(
+            key: 'current_delivery_id',
+            value: deliveryDetails.id!,
+          );
+        } catch (e) {}
         emit(ActivateDeliverySuccess(delivery: deliveryDetails));
       }
     } catch (e) {
+      FlutterForegroundTask.removeData(key: 'current_delivery_id');
       emit(ActivateDeliveryFailure(
         error: ApiError.fromResponse(e),
         delivery: null,

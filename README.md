@@ -1,16 +1,32 @@
-# muto_driver_app
+import 'package:pusher_client/pusher_client.dart';
 
-A new Flutter project.
+void main() {
+  // Pusher options - match your Laravel config and Nginx proxy
+  final options = PusherOptions(
+    cluster: 'mt1',  // can be any string, used by Pusher for clustering but not used by Laravel WebSockets itself
+    host: 'muto-services.com',
+    port: 443,
+    encrypted: true,  // use TLS (wss)
+    wsPath: '/app/',  // important to match the proxy location in Nginx
+  );
 
-## Getting Started
+  // Your Pusher key from .env PUSHER_APP_KEY
+  final pusher = PusherClient(
+    'your-pusher-app-key',
+    options,
+    enableLogging: true,
+  );
 
-This project is a starting point for a Flutter application.
+  // Subscribe to the delivery channel with ID 123 (example)
+  final channel = pusher.subscribe('delivery.123');
 
-A few resources to get you started if this is your first Flutter project:
+  // Bind to your event name exactly as Laravel broadcasts it
+  channel.bind('CourierLocationUpdated', (PusherEvent? event) {
+    if (event != null && event.data != null) {
+      print('Received event data: ${event.data}');
+      // Parse JSON and update your Flutter UI accordingly
+    }
+  });
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+  pusher.connect();
+}

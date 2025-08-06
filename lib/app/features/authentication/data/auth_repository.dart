@@ -124,4 +124,31 @@ class AuthRepository {
 
     return response;
   }
+
+  Future sendResetPasswordEmail({required String email}) async {
+    final response = await _dio.post(
+      '/auth/forgot-password',
+      data: {
+        'email': email,
+      },
+    );
+    return response.data;
+  }
+
+  Future<dynamic> resetPassword({
+    required String token,
+    required String password,
+    required String email,
+  }) async {
+    final response = await _dio.post(
+      '/auth/reset-password',
+      data: {
+        'code': token,
+        'email': email,
+        'password': password,
+        'password_confirmation': password,
+      },
+    );
+    return response.data;
+  }
 }
