@@ -130,8 +130,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Logo
                     const AppLogo(),
 
-                    const SizedBox(height: 60),
-
                     // Login Title
                     Text(
                       'Login',
