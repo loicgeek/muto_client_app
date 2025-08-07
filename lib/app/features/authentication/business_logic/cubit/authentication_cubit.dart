@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:muto_driver_app/app/core/network/api_error.dart';
-import 'package:muto_driver_app/app/features/authentication/data/auth_repository.dart';
-import 'package:muto_driver_app/app/features/authentication/data/models/user_model.dart';
+import 'package:muto_client_app/app/core/network/api_error.dart';
+import 'package:muto_client_app/app/features/authentication/data/auth_repository.dart';
+import 'package:muto_client_app/app/features/authentication/data/models/user_model.dart';
 
 part 'authentication_state.dart';
 
@@ -17,6 +17,31 @@ class AuthenticationCubit extends Cubit<AuthenticationState> {
     try {
       final user =
           await _authRepository.login(email: email, password: password);
+      emit(AuthenticationSuccess(user: user));
+    } catch (e) {
+      final error = ApiError.fromResponse(e);
+      emit(AuthenticationFailure(message: error.message));
+    }
+  }
+
+  Future<void> register({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String phone,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    emit(AuthenticationLoading());
+    try {
+      final user = await _authRepository.register(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+        password: password,
+        passwordConfirmation: passwordConfirmation,
+      );
       emit(AuthenticationSuccess(user: user));
     } catch (e) {
       final error = ApiError.fromResponse(e);

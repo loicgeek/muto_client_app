@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:muto_driver_app/app/ui/app_config.dart';
+import 'package:muto_client_app/app/ui/app_config.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class LocationService {

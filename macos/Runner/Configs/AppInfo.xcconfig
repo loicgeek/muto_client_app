@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = muto_driver_app
+PRODUCT_NAME = muto_client_app
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.muto.driverapp.mutoDriverApp
+PRODUCT_BUNDLE_IDENTIFIER = com.mutoServices.mutoClientApp
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2025 com.muto.driver_app. All rights reserved.

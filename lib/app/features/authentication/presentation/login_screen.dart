@@ -7,19 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_device_identifier/mobile_device_identifier.dart';
-import 'package:muto_driver_app/app/core/router/app_router.gr.dart';
-import 'package:muto_driver_app/app/core/service_locator.dart';
-import 'package:muto_driver_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
-import 'package:muto_driver_app/app/features/authentication/data/auth_repository.dart';
-import 'package:muto_driver_app/app/features/authentication/presentation/register_screen.dart';
-import 'package:muto_driver_app/app/features/home/presentation/home_screen.dart';
-import 'package:muto_driver_app/app/features/notifications/data/notification_repository.dart';
-import 'package:muto_driver_app/app/ui/app_theme.dart';
-import 'package:muto_driver_app/app/ui/ui_utils.dart';
-import 'package:muto_driver_app/app/ui/validators.dart';
-import 'package:muto_driver_app/app/widgets/app_button.dart';
-import 'package:muto_driver_app/app/widgets/app_logo.dart';
-import 'package:muto_driver_app/app/widgets/app_text_field.dart';
+import 'package:muto_client_app/app/core/router/app_router.gr.dart';
+import 'package:muto_client_app/app/core/service_locator.dart';
+import 'package:muto_client_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
+import 'package:muto_client_app/app/features/authentication/data/auth_repository.dart';
+import 'package:muto_client_app/app/features/authentication/presentation/register_screen.dart';
+import 'package:muto_client_app/app/features/home/presentation/home_screen.dart';
+import 'package:muto_client_app/app/features/notifications/data/notification_repository.dart';
+import 'package:muto_client_app/app/ui/app_theme.dart';
+import 'package:muto_client_app/app/ui/ui_utils.dart';
+import 'package:muto_client_app/app/ui/validators.dart';
+import 'package:muto_client_app/app/widgets/app_button.dart';
+import 'package:muto_client_app/app/widgets/app_logo.dart';
+import 'package:muto_client_app/app/widgets/app_text_field.dart';
 
 // Your existing AppTheme class would be imported here
 // For this example, I'll include the necessary parts

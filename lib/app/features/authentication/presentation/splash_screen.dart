@@ -1,11 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:muto_driver_app/app/core/router/app_router.gr.dart';
-import 'package:muto_driver_app/app/core/service_locator.dart';
-import 'package:muto_driver_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
-import 'package:muto_driver_app/app/features/authentication/presentation/login_screen.dart';
-import 'package:muto_driver_app/app/features/home/presentation/home_screen.dart';
+import 'package:muto_client_app/app/core/router/app_router.gr.dart';
+import 'package:muto_client_app/app/core/service_locator.dart';
+import 'package:muto_client_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
+import 'package:muto_client_app/app/features/authentication/presentation/login_screen.dart';
+import 'package:muto_client_app/app/features/home/presentation/home_screen.dart';
 
 @RoutePage()
 class SplashScreen extends StatefulWidget {

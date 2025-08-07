@@ -1,13 +1,18 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:muto_client_app/app/core/network/api_error.dart';
+import 'package:muto_client_app/app/core/router/app_router.gr.dart';
+import 'package:muto_client_app/app/core/service_locator.dart';
+import 'package:muto_client_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
 
-import 'package:muto_driver_app/app/ui/app_theme.dart';
-import 'package:muto_driver_app/app/widgets/app_button.dart';
-import 'package:muto_driver_app/app/widgets/app_logo.dart';
-import 'package:muto_driver_app/app/widgets/app_text_field.dart';
+import 'package:muto_client_app/app/ui/app_theme.dart';
+import 'package:muto_client_app/app/ui/loading_overlay.dart';
+import 'package:muto_client_app/app/ui/ui_utils.dart';
+import 'package:muto_client_app/app/widgets/app_button.dart';
+import 'package:muto_client_app/app/widgets/app_logo.dart';
+import 'package:muto_client_app/app/widgets/app_text_field.dart';
 
 @RoutePage()
 class RegisterScreen extends StatefulWidget {
@@ -31,25 +36,20 @@ class _RegisterScreenState extends State<RegisterScreen>
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passwordConfirmationController = TextEditingController();
-  final _idCardNumberController = TextEditingController();
-  final _driverLicenseNumberController = TextEditingController();
-  final _addressController = TextEditingController();
 
   // Password visibility
   bool _obscurePassword = true;
   bool _obscurePasswordConfirmation = true;
 
-  // Document files
-  File? _driverLicenseFile;
-  File? _idCardFile;
-
   // Role selection
-  String _selectedRole = 'courier';
+
+  late AuthenticationCubit _authenticationCubit;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
+    _authenticationCubit = getIt.get<AuthenticationCubit>();
   }
 
   @override
@@ -61,40 +61,11 @@ class _RegisterScreenState extends State<RegisterScreen>
     _phoneController.dispose();
     _passwordController.dispose();
     _passwordConfirmationController.dispose();
-    _idCardNumberController.dispose();
-    _driverLicenseNumberController.dispose();
-    _addressController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickImage(String documentType) async {
-    try {
-      final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1024,
-        maxHeight: 1024,
-        imageQuality: 85,
-      );
-
-      if (image != null) {
-        setState(() {
-          if (documentType == 'driver_license') {
-            _driverLicenseFile = File(image.path);
-          } else if (documentType == 'id_card') {
-            _idCardFile = File(image.path);
-          }
-        });
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking image: $e')),
-      );
-    }
-  }
-
   void _nextStep() {
-    if (_currentStep < 2) {
+    if (_currentStep == 0) {
       if (_validateCurrentStep()) {
         setState(() {
           _currentStep++;
@@ -121,8 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen>
         return _validatePersonalInfo();
       case 1:
         return _validateCredentials();
-      case 2:
-        return _validateDocuments();
+
       default:
         return false;
     }
@@ -137,8 +107,7 @@ class _RegisterScreenState extends State<RegisterScreen>
       return false;
     }
 
-    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-        .hasMatch(_emailController.text)) {
+    if (isValidEmail(_emailController.text) != null) {
       _showError('Please enter a valid email address');
       return false;
     }
@@ -146,10 +115,21 @@ class _RegisterScreenState extends State<RegisterScreen>
     return true;
   }
 
+  static String? isValidEmail(String? value) {
+    if (value != null && value.isNotEmpty) {
+      var regex = RegExp(
+          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+
+      if (!regex.hasMatch(value)) {
+        return "Please enter a valid email address";
+      }
+    }
+    return null;
+  }
+
   bool _validateCredentials() {
     if (_passwordController.text.isEmpty ||
-        _passwordConfirmationController.text.isEmpty ||
-        _addressController.text.isEmpty) {
+        _passwordConfirmationController.text.isEmpty) {
       _showError('Please fill in all credential fields');
       return false;
     }
@@ -161,21 +141,6 @@ class _RegisterScreenState extends State<RegisterScreen>
 
     if (_passwordController.text.length < 6) {
       _showError('Password must be at least 6 characters long');
-      return false;
-    }
-
-    return true;
-  }
-
-  bool _validateDocuments() {
-    if (_idCardNumberController.text.isEmpty ||
-        _driverLicenseNumberController.text.isEmpty) {
-      _showError('Please fill in all document numbers');
-      return false;
-    }
-
-    if (_driverLicenseFile == null || _idCardFile == null) {
-      _showError('Please upload both driver license and ID card documents');
       return false;
     }
 
@@ -199,23 +164,21 @@ class _RegisterScreenState extends State<RegisterScreen>
     });
 
     try {
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
-
-      // Here you would implement the actual API call
-      // using the form data and file uploads
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Registration successful!'),
-          backgroundColor: Colors.green,
-        ),
+      await _authenticationCubit.register(
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text,
+        email: _emailController.text,
+        phone: _phoneController.text,
+        password: _passwordController.text,
+        passwordConfirmation: _passwordConfirmationController.text,
       );
+      setState(() {
+        _isLoading = false;
+      });
 
       // Navigate to login or dashboard
-      Navigator.of(context).pop();
     } catch (e) {
-      _showError('Registration failed: $e');
+      UiUtils.showSnackbarError(context, ApiError.fromResponse(e).message);
     } finally {
       setState(() {
         _isLoading = false;
@@ -225,37 +188,47 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.lightGray,
-      appBar: AppBar(
-        backgroundColor: AppTheme.lightGray,
-        elevation: 0,
-        title: const Text('Sign Up'),
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: AppTheme.primaryBlue,
-          unselectedLabelColor: AppTheme.mediumGray,
-          indicatorColor: AppTheme.primaryBlue,
-          tabs: const [
-            Tab(text: 'Personal'),
-            Tab(text: 'Credentials'),
-            Tab(text: 'Documents'),
-          ],
-        ),
-      ),
-      body: Form(
-        key: _formKey,
-        child: TabBarView(
-          controller: _tabController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            _buildPersonalInfoStep(),
-            _buildCredentialsStep(),
-            _buildDocumentsStep(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: _buildBottomNavigation(),
+    return BlocConsumer<AuthenticationCubit, AuthenticationState>(
+      bloc: _authenticationCubit,
+      listener: (context, state) {
+        if (state is AuthenticationSuccess) {
+          context.router.replaceAll([HomeRoute()]);
+        } else if (state is AuthenticationFailure) {
+          UiUtils.showSnackbarError(context, state.message);
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: AppTheme.lightGray,
+          appBar: AppBar(
+            backgroundColor: AppTheme.lightGray,
+            elevation: 0,
+            title: const Text('Sign Up'),
+            bottom: TabBar(
+              controller: _tabController,
+              labelColor: AppTheme.primaryBlue,
+              unselectedLabelColor: AppTheme.mediumGray,
+              indicatorColor: AppTheme.primaryBlue,
+              tabs: const [
+                Tab(text: 'Personal'),
+                Tab(text: 'Credentials'),
+              ],
+            ),
+          ),
+          body: Form(
+            key: _formKey,
+            child: TabBarView(
+              controller: _tabController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                _buildPersonalInfoStep(),
+                _buildCredentialsStep(),
+              ],
+            ),
+          ),
+          bottomNavigationBar: _buildBottomNavigation(),
+        );
+      },
     );
   }
 
@@ -318,8 +291,7 @@ class _RegisterScreenState extends State<RegisterScreen>
               if (value == null || value.isEmpty) {
                 return 'Email is required';
               }
-              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                  .hasMatch(value)) {
+              if (isValidEmail(value) != null) {
                 return 'Please enter a valid email';
               }
               return null;
@@ -339,40 +311,6 @@ class _RegisterScreenState extends State<RegisterScreen>
             },
           ),
           const SizedBox(height: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Role',
-                style: AppTheme.bodyMedium,
-              ),
-              const SizedBox(height: 8),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppTheme.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppTheme.inputBorder),
-                ),
-                child: DropdownButton<String>(
-                  value: _selectedRole,
-                  isExpanded: true,
-                  underline: Container(),
-                  items: const [
-                    DropdownMenuItem(value: 'courier', child: Text('Courier')),
-                    DropdownMenuItem(value: 'driver', child: Text('Driver')),
-                    DropdownMenuItem(value: 'manager', child: Text('Manager')),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedRole = value!;
-                    });
-                  },
-                ),
-              ),
-            ],
-          ),
         ],
       ),
     );
@@ -449,139 +387,8 @@ class _RegisterScreenState extends State<RegisterScreen>
               return null;
             },
           ),
-          const SizedBox(height: 20),
-          AppTextField(
-            labelText: 'Address',
-            hintText: 'Enter your full address',
-            controller: _addressController,
-            maxLines: 3,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Address is required';
-              }
-              return null;
-            },
-          ),
         ],
       ),
-    );
-  }
-
-  Widget _buildDocumentsStep() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Required Documents',
-            style: AppTheme.headingMedium,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Upload your identification documents',
-            style: AppTheme.bodyMedium,
-          ),
-          const SizedBox(height: 32),
-          AppTextField(
-            labelText: 'ID Card Number',
-            hintText: 'Enter your ID card number',
-            controller: _idCardNumberController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'ID card number is required';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 20),
-          _buildDocumentUpload(
-            title: 'ID Card',
-            subtitle: 'Upload a clear photo of your ID card',
-            file: _idCardFile,
-            onTap: () => _pickImage('id_card'),
-          ),
-          const SizedBox(height: 20),
-          AppTextField(
-            labelText: 'Driver License Number',
-            hintText: 'Enter your driver license number',
-            controller: _driverLicenseNumberController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Driver license number is required';
-              }
-              return null;
-            },
-          ),
-          const SizedBox(height: 20),
-          _buildDocumentUpload(
-            title: 'Driver License',
-            subtitle: 'Upload a clear photo of your driver license',
-            file: _driverLicenseFile,
-            onTap: () => _pickImage('driver_license'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDocumentUpload({
-    required String title,
-    required String subtitle,
-    required File? file,
-    required VoidCallback onTap,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: AppTheme.bodyMedium),
-        const SizedBox(height: 8),
-        GestureDetector(
-          onTap: onTap,
-          child: Container(
-            width: double.infinity,
-            height: 120,
-            decoration: BoxDecoration(
-              color: AppTheme.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color:
-                    file != null ? AppTheme.primaryBlue : AppTheme.inputBorder,
-                width: file != null ? 2 : 1,
-              ),
-            ),
-            child: file != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.file(
-                      file,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.cloud_upload_outlined,
-                        size: 32,
-                        color: AppTheme.mediumGray,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Tap to upload',
-                        style: AppTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: AppTheme.bodySmall,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -617,7 +424,7 @@ class _RegisterScreenState extends State<RegisterScreen>
           if (_currentStep > 0) const SizedBox(width: 16),
           Expanded(
             child: AppButton(
-              text: _currentStep == 2 ? 'Create Account' : 'Next',
+              text: _currentStep == 1 ? 'Create Account' : 'Next',
               onPressed: _nextStep,
               isLoading: _isLoading,
             ),

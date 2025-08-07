@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:683198013079:android:35b49c0ff390c9ea07d3d2",
         "android_client_info": {
-          "package_name": "com.muto.driver_app.muto_driver_app"
+          "package_name": "com.muto_services.muto_client_app"
         }
       },
       "oauth_client": [

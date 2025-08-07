@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muto_driver_app/app/ui/app_theme.dart';
+import 'package:muto_client_app/app/ui/app_theme.dart';
 
 class AppButton extends StatelessWidget {
   final String text;

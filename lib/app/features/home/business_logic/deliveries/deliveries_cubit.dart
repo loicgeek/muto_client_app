@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:muto_driver_app/app/core/network/api_error.dart';
-import 'package:muto_driver_app/app/core/network/api_filter.dart';
-import 'package:muto_driver_app/app/core/network/pagination.dart';
-import 'package:muto_driver_app/app/features/home/data/models/delivery_model.dart';
-import 'package:muto_driver_app/app/features/home/repositories/deliveries_repository.dart';
+import 'package:muto_client_app/app/core/network/api_error.dart';
+import 'package:muto_client_app/app/core/network/api_filter.dart';
+import 'package:muto_client_app/app/core/network/pagination.dart';
+import 'package:muto_client_app/app/features/home/data/models/delivery_model.dart';
+import 'package:muto_client_app/app/features/home/repositories/deliveries_repository.dart';
 
 part 'deliveries_state.dart';
 

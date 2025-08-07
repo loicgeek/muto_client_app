@@ -12,38 +12,38 @@
 import 'package:auto_route/auto_route.dart' as _i14;
 import 'package:flutter/foundation.dart' as _i15;
 import 'package:latlong2/latlong.dart' as _i16;
-import 'package:muto_driver_app/app/core/presentation/app_initialization_screen.dart'
+import 'package:muto_client_app/app/core/presentation/app_initialization_screen.dart'
     as _i1;
-import 'package:muto_driver_app/app/features/authentication/presentation/forgot_password_screen.dart'
+import 'package:muto_client_app/app/features/authentication/presentation/forgot_password_screen.dart'
     as _i7;
-import 'package:muto_driver_app/app/features/authentication/presentation/login_screen.dart'
+import 'package:muto_client_app/app/features/authentication/presentation/login_screen.dart'
     as _i9;
-import 'package:muto_driver_app/app/features/authentication/presentation/onboarding_screen.dart'
+import 'package:muto_client_app/app/features/authentication/presentation/onboarding_screen.dart'
     as _i10;
-import 'package:muto_driver_app/app/features/authentication/presentation/register_screen.dart'
+import 'package:muto_client_app/app/features/authentication/presentation/register_screen.dart'
     as _i11;
-import 'package:muto_driver_app/app/features/authentication/presentation/splash_screen.dart'
+import 'package:muto_client_app/app/features/authentication/presentation/splash_screen.dart'
     as _i12;
-import 'package:muto_driver_app/app/features/home/presentation/delivery_tracking_screen.dart'
+import 'package:muto_client_app/app/features/home/presentation/delivery_tracking_screen.dart'
     as _i2;
-import 'package:muto_driver_app/app/features/home/presentation/driver_deliveries_screen.dart'
+import 'package:muto_client_app/app/features/home/presentation/driver_deliveries_screen.dart'
     as _i3;
-import 'package:muto_driver_app/app/features/home/presentation/driver_earnings_screen.dart'
+import 'package:muto_client_app/app/features/home/presentation/driver_earnings_screen.dart'
     as _i4;
-import 'package:muto_driver_app/app/features/home/presentation/driver_home_screen.dart'
+import 'package:muto_client_app/app/features/home/presentation/driver_home_screen.dart'
     as _i5;
-import 'package:muto_driver_app/app/features/home/presentation/driver_profile_screen.dart'
+import 'package:muto_client_app/app/features/home/presentation/driver_profile_screen.dart'
     as _i6;
-import 'package:muto_driver_app/app/features/home/presentation/home_screen.dart'
+import 'package:muto_client_app/app/features/home/presentation/home_screen.dart'
     as _i8;
-import 'package:muto_driver_app/app/features/home/presentation/step_by_step_navigation_screen.dart'
+import 'package:muto_client_app/app/features/home/presentation/step_by_step_navigation_screen.dart'
     as _i13;
 
 /// generated route for
 /// [_i1.AppInitializationScreen]
 class AppInitializationRoute extends _i14.PageRouteInfo<void> {
   const AppInitializationRoute({List<_i14.PageRouteInfo>? children})
-    : super(AppInitializationRoute.name, initialChildren: children);
+      : super(AppInitializationRoute.name, initialChildren: children);
 
   static const String name = 'AppInitializationRoute';
 
@@ -59,7 +59,7 @@ class AppInitializationRoute extends _i14.PageRouteInfo<void> {
 /// [_i2.DeliveryTrackingScreen]
 class DeliveryTrackingRoute extends _i14.PageRouteInfo<void> {
   const DeliveryTrackingRoute({List<_i14.PageRouteInfo>? children})
-    : super(DeliveryTrackingRoute.name, initialChildren: children);
+      : super(DeliveryTrackingRoute.name, initialChildren: children);
 
   static const String name = 'DeliveryTrackingRoute';
 
@@ -75,7 +75,7 @@ class DeliveryTrackingRoute extends _i14.PageRouteInfo<void> {
 /// [_i3.DriverDeliveriesScreen]
 class DriverDeliveriesRoute extends _i14.PageRouteInfo<void> {
   const DriverDeliveriesRoute({List<_i14.PageRouteInfo>? children})
-    : super(DriverDeliveriesRoute.name, initialChildren: children);
+      : super(DriverDeliveriesRoute.name, initialChildren: children);
 
   static const String name = 'DriverDeliveriesRoute';
 
@@ -91,7 +91,7 @@ class DriverDeliveriesRoute extends _i14.PageRouteInfo<void> {
 /// [_i4.DriverEarningsScreen]
 class DriverEarningsRoute extends _i14.PageRouteInfo<void> {
   const DriverEarningsRoute({List<_i14.PageRouteInfo>? children})
-    : super(DriverEarningsRoute.name, initialChildren: children);
+      : super(DriverEarningsRoute.name, initialChildren: children);
 
   static const String name = 'DriverEarningsRoute';
 
@@ -107,7 +107,7 @@ class DriverEarningsRoute extends _i14.PageRouteInfo<void> {
 /// [_i5.DriverHomeScreen]
 class DriverHomeRoute extends _i14.PageRouteInfo<void> {
   const DriverHomeRoute({List<_i14.PageRouteInfo>? children})
-    : super(DriverHomeRoute.name, initialChildren: children);
+      : super(DriverHomeRoute.name, initialChildren: children);
 
   static const String name = 'DriverHomeRoute';
 
@@ -123,7 +123,7 @@ class DriverHomeRoute extends _i14.PageRouteInfo<void> {
 /// [_i6.DriverProfileScreen]
 class DriverProfileRoute extends _i14.PageRouteInfo<void> {
   const DriverProfileRoute({List<_i14.PageRouteInfo>? children})
-    : super(DriverProfileRoute.name, initialChildren: children);
+      : super(DriverProfileRoute.name, initialChildren: children);
 
   static const String name = 'DriverProfileRoute';
 
@@ -139,7 +139,7 @@ class DriverProfileRoute extends _i14.PageRouteInfo<void> {
 /// [_i7.ForgotPasswordScreen]
 class ForgotPasswordRoute extends _i14.PageRouteInfo<void> {
   const ForgotPasswordRoute({List<_i14.PageRouteInfo>? children})
-    : super(ForgotPasswordRoute.name, initialChildren: children);
+      : super(ForgotPasswordRoute.name, initialChildren: children);
 
   static const String name = 'ForgotPasswordRoute';
 
@@ -155,7 +155,7 @@ class ForgotPasswordRoute extends _i14.PageRouteInfo<void> {
 /// [_i8.HomeScreen]
 class HomeRoute extends _i14.PageRouteInfo<void> {
   const HomeRoute({List<_i14.PageRouteInfo>? children})
-    : super(HomeRoute.name, initialChildren: children);
+      : super(HomeRoute.name, initialChildren: children);
 
   static const String name = 'HomeRoute';
 
@@ -171,7 +171,7 @@ class HomeRoute extends _i14.PageRouteInfo<void> {
 /// [_i9.LoginScreen]
 class LoginRoute extends _i14.PageRouteInfo<void> {
   const LoginRoute({List<_i14.PageRouteInfo>? children})
-    : super(LoginRoute.name, initialChildren: children);
+      : super(LoginRoute.name, initialChildren: children);
 
   static const String name = 'LoginRoute';
 
@@ -187,7 +187,7 @@ class LoginRoute extends _i14.PageRouteInfo<void> {
 /// [_i10.OnboardingScreen]
 class OnboardingRoute extends _i14.PageRouteInfo<void> {
   const OnboardingRoute({List<_i14.PageRouteInfo>? children})
-    : super(OnboardingRoute.name, initialChildren: children);
+      : super(OnboardingRoute.name, initialChildren: children);
 
   static const String name = 'OnboardingRoute';
 
@@ -203,7 +203,7 @@ class OnboardingRoute extends _i14.PageRouteInfo<void> {
 /// [_i11.RegisterScreen]
 class RegisterRoute extends _i14.PageRouteInfo<void> {
   const RegisterRoute({List<_i14.PageRouteInfo>? children})
-    : super(RegisterRoute.name, initialChildren: children);
+      : super(RegisterRoute.name, initialChildren: children);
 
   static const String name = 'RegisterRoute';
 
@@ -219,7 +219,7 @@ class RegisterRoute extends _i14.PageRouteInfo<void> {
 /// [_i12.SplashScreen]
 class SplashRoute extends _i14.PageRouteInfo<void> {
   const SplashRoute({List<_i14.PageRouteInfo>? children})
-    : super(SplashRoute.name, initialChildren: children);
+      : super(SplashRoute.name, initialChildren: children);
 
   static const String name = 'SplashRoute';
 
@@ -243,16 +243,16 @@ class StepByStepNavigationRoute
     required String endAddress,
     List<_i14.PageRouteInfo>? children,
   }) : super(
-         StepByStepNavigationRoute.name,
-         args: StepByStepNavigationRouteArgs(
-           key: key,
-           startLocation: startLocation,
-           endLocation: endLocation,
-           startAddress: startAddress,
-           endAddress: endAddress,
-         ),
-         initialChildren: children,
-       );
+          StepByStepNavigationRoute.name,
+          args: StepByStepNavigationRouteArgs(
+            key: key,
+            startLocation: startLocation,
+            endLocation: endLocation,
+            startAddress: startAddress,
+            endAddress: endAddress,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'StepByStepNavigationRoute';
 

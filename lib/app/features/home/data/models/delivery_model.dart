@@ -1,5 +1,5 @@
 // Main Delivery class
-import 'package:muto_driver_app/app/features/authentication/data/models/courier_model.dart';
+import 'package:muto_client_app/app/features/authentication/data/models/courier_model.dart';
 
 class DeliveryModel {
   final int? id;

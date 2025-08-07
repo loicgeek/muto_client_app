@@ -6,7 +6,7 @@
     "configurations": [
     
         {
-            "name": "muto_driver_app",
+            "name": "muto_client_app",
             "request": "launch",
             "type": "dart",
             "args": [
@@ -14,13 +14,13 @@
             ]
         },
         {
-            "name": "muto_driver_app (profile mode)",
+            "name": "muto_client_app (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "muto_driver_app (release mode)",
+            "name": "muto_client_app (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

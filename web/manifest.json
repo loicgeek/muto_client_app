@@ -1,6 +1,6 @@
 {
-    "name": "muto_driver_app",
-    "short_name": "muto_driver_app",
+    "name": "muto_client_app",
+    "short_name": "muto_client_app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

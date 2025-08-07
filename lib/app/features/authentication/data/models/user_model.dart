@@ -1,4 +1,4 @@
-import 'package:muto_driver_app/app/features/authentication/data/models/courier_model.dart';
+import 'package:muto_client_app/app/features/authentication/data/models/courier_model.dart';
 
 class UserModel {
   final int? id;

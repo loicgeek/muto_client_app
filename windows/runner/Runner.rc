@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.muto.driver_app" "\0"
-            VALUE "FileDescription", "muto_driver_app" "\0"
+            VALUE "FileDescription", "muto_client_app" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "muto_driver_app" "\0"
+            VALUE "InternalName", "muto_client_app" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.muto.driver_app. All rights reserved." "\0"
-            VALUE "OriginalFilename", "muto_driver_app.exe" "\0"
-            VALUE "ProductName", "muto_driver_app" "\0"
+            VALUE "OriginalFilename", "muto_client_app.exe" "\0"
+            VALUE "ProductName", "muto_client_app" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

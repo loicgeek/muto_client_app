@@ -2,14 +2,14 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:muto_driver_app/app/core/router/app_router.gr.dart';
-import 'package:muto_driver_app/app/core/service_locator.dart';
-import 'package:muto_driver_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
-import 'package:muto_driver_app/app/features/home/business_logic/current_delivery/current_delivery_cubit.dart';
-import 'package:muto_driver_app/app/features/home/data/models/delivery_model.dart';
-import 'package:muto_driver_app/app/features/notifications/data/services/location_service.dart';
-import 'package:muto_driver_app/app/ui/app_theme.dart';
-import 'package:muto_driver_app/app/ui/ui_utils.dart';
+import 'package:muto_client_app/app/core/router/app_router.gr.dart';
+import 'package:muto_client_app/app/core/service_locator.dart';
+import 'package:muto_client_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
+import 'package:muto_client_app/app/features/home/business_logic/current_delivery/current_delivery_cubit.dart';
+import 'package:muto_client_app/app/features/home/data/models/delivery_model.dart';
+import 'package:muto_client_app/app/features/notifications/data/services/location_service.dart';
+import 'package:muto_client_app/app/ui/app_theme.dart';
+import 'package:muto_client_app/app/ui/ui_utils.dart';
 import 'package:latlong2/latlong.dart';
 
 @RoutePage()

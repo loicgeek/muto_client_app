@@ -2,9 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_parser/http_parser.dart';
-import 'package:muto_driver_app/app/features/authentication/data/models/courier_model.dart';
-import 'package:muto_driver_app/app/features/authentication/data/models/document_upload.dart';
-import 'package:muto_driver_app/app/features/authentication/data/models/user_model.dart';
+import 'package:muto_client_app/app/features/authentication/data/models/courier_model.dart';
+import 'package:muto_client_app/app/features/authentication/data/models/document_upload.dart';
+import 'package:muto_client_app/app/features/authentication/data/models/user_model.dart';
 
 class AuthRepository {
   final Dio _dio;
@@ -69,48 +69,23 @@ class AuthRepository {
     return CourierModel.fromJson(response.data);
   }
 
-  Future<Response> register({
+  Future<UserModel> register({
     required String firstName,
     required String lastName,
     required String email,
     required String phone,
     required String password,
     required String passwordConfirmation,
-    required String idCardNumber,
-    required String driverLicenseNumber,
-    required String address,
-    List<DocumentUpload>? documents,
   }) async {
     final formData = FormData.fromMap({
       'first_name': firstName,
       'last_name': lastName,
       'email': email,
       'phone': phone,
-      'role': "courier",
+      'role': "client",
       'password': password,
-      'password_confirmation': passwordConfirmation,
-      'id_card_number': idCardNumber,
-      'driver_license_number': driverLicenseNumber,
-      'address': address,
+      "password_confirmation": passwordConfirmation,
     });
-
-    // Add documents if provided
-    if (documents != null) {
-      for (int i = 0; i < documents.length; i++) {
-        final doc = documents[i];
-        formData.fields.add(MapEntry('documents[$i][type]', doc.type));
-
-        if (doc.file != null) {
-          final multipartFile = await MultipartFile.fromFile(
-            doc.file!.path,
-            filename: doc.file!.path.split('/').last,
-            contentType:
-                MediaType('image', 'jpeg'), // Adjust based on file type
-          );
-          formData.files.add(MapEntry('documents[$i][file]', multipartFile));
-        }
-      }
-    }
 
     final response = await _dio.post(
       '/auth/register',
@@ -122,7 +97,7 @@ class AuthRepository {
       ),
     );
 
-    return response;
+    return UserModel.fromJson(response.data);
   }
 
   Future sendResetPasswordEmail({required String email}) async {

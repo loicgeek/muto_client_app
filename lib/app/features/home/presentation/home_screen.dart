@@ -1,9 +1,9 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:muto_driver_app/app/core/router/app_router.gr.dart';
-import 'package:muto_driver_app/app/ui/app_theme.dart';
-// import 'package:muto_driver_app/app/core/router/app_router.gr.dart';
+import 'package:muto_client_app/app/core/router/app_router.gr.dart';
+import 'package:muto_client_app/app/ui/app_theme.dart';
+// import 'package:muto_client_app/app/core/router/app_router.gr.dart';
 
 @RoutePage()
 class HomeScreen extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:muto_driver_app/app/ui/app_theme.dart';
+import 'package:muto_client_app/app/ui/app_theme.dart';
 
 // Assuming your AppTheme is imported
 // import 'app_theme.dart';

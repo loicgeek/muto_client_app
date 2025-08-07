@@ -69,8 +69,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '683198013079',
     projectId: 'anubis-baf99',
     storageBucket: 'anubis-baf99.firebasestorage.app',
-    androidClientId: '683198013079-g23tdf9ccadk90mea4oobhfcfhaen7gv.apps.googleusercontent.com',
-    iosClientId: '683198013079-0limngtvs63evsh728vf5shuflu7tre8.apps.googleusercontent.com',
-    iosBundleId: 'com.muto.driverapp.mutoDriverApp',
+    androidClientId:
+        '683198013079-g23tdf9ccadk90mea4oobhfcfhaen7gv.apps.googleusercontent.com',
+    iosClientId:
+        '683198013079-0limngtvs63evsh728vf5shuflu7tre8.apps.googleusercontent.com',
+    iosBundleId: 'com.mutoServices.mutoClientApp',
   );
 }

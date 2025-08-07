@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:muto_driver_app/app/features/authentication/presentation/login_screen.dart';
+import 'package:muto_client_app/app/features/authentication/presentation/login_screen.dart';
 
-import 'package:muto_driver_app/app/ui/app_theme.dart';
-import 'package:muto_driver_app/boostrap.dart';
-import 'package:muto_driver_app/app/ui/application.dart';
+import 'package:muto_client_app/app/ui/app_theme.dart';
+import 'package:muto_client_app/boostrap.dart';
+import 'package:muto_client_app/app/ui/application.dart';
 
 void main() async {
   bootstrap(builder: () => Application());

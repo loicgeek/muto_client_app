@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:muto_driver_app/app/core/network/api_filter.dart';
-import 'package:muto_driver_app/app/core/network/pagination.dart';
-import 'package:muto_driver_app/app/features/home/data/models/delivery_model.dart';
+import 'package:muto_client_app/app/core/network/api_filter.dart';
+import 'package:muto_client_app/app/core/network/pagination.dart';
+import 'package:muto_client_app/app/features/home/data/models/delivery_model.dart';
 
 class DeliveriesRepository {
   final Dio _dio;
