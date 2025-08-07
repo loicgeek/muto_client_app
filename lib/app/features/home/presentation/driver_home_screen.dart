@@ -313,11 +313,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen>
             ),
           ),
           // Delivery request notification overlay
-          if (hasPendingRequest && isOnline)
-            SlideTransition(
-              position: _slideAnimation,
-              child: _buildDeliveryRequestNotification(),
-            ),
+          // if (hasPendingRequest && isOnline)
+          //   SlideTransition(
+          //     position: _slideAnimation,
+          //     child: _buildDeliveryRequestNotification(),
+          //   ),
         ],
       ),
     );

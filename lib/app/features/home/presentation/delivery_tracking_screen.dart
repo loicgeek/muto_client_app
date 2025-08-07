@@ -4,15 +4,22 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:http/http.dart' as http;
+import 'package:muto_client_app/app/core/service_locator.dart';
 
 import 'package:muto_client_app/app/features/home/data/models/delivery_model.dart';
+import 'package:muto_client_app/app/features/home/repositories/deliveries_repository.dart';
+import 'package:muto_client_app/app/ui/loading_overlay.dart';
 
 @RoutePage()
 class DeliveryTrackingScreen extends StatefulWidget {
-  const DeliveryTrackingScreen({super.key});
+  final int? id;
+  const DeliveryTrackingScreen({
+    super.key,
+    this.id,
+  });
 
   @override
   State<DeliveryTrackingScreen> createState() => _DeliveryTrackingScreenState();
@@ -48,34 +55,12 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   // Load initial delivery data
   Future<void> _loadDeliveryData() async {
     try {
-      // For demo purposes, using the provided JSON data
-      final sampleData = {
-        "id": 10,
-        "pickup_address": "123 Main St, City, State",
-        "pickup_latitude": "40.71280000",
-        "pickup_longitude": "-74.00600000",
-        "dropoff_address": "456 Oak Ave, City, State",
-        "dropoff_latitude": "40.75890000",
-        "dropoff_longitude": "-73.98510000",
-        "status": "assigned",
-        "content_type": "Electronics",
-        "price": "25.00",
-        "courier": {
-          "id": 2,
-          "online": true,
-          "last_latitude": "40.72000000",
-          "last_longitude": "-74.00000000"
-        },
-        "vehicle": {
-          "make": "Honda",
-          "model": "CBR600",
-          "license_plate": "XYZ788",
-          "type": "bike"
-        }
-      };
+      var data = await context.read<LoadingController>().wrapWithLoading(() {
+        return getIt.get<DeliveriesRepository>().findOne(widget.id!);
+      });
 
       setState(() {
-        deliveryData = DeliveryModel.fromJson(sampleData);
+        deliveryData = data;
         isLoading = false;
       });
 
@@ -400,7 +385,7 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   // Start real-time location tracking
   void _startLocationTracking() {
     locationTimer = Timer.periodic(Duration(seconds: 5), (timer) {
-      _updateCourierLocation();
+      //  _updateCourierLocation();
     });
   }
 
@@ -432,7 +417,6 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Delivery Tracking'),
-        backgroundColor: Colors.blue[600],
         elevation: 0,
       ),
       body: isLoading
@@ -495,7 +479,6 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
               }
             },
             child: Icon(Icons.center_focus_strong),
-            backgroundColor: Colors.blue[600],
           ),
           SizedBox(height: 8),
 
@@ -509,7 +492,6 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
               }
             },
             child: Icon(Icons.my_location),
-            backgroundColor: Colors.green[600],
           ),
         ],
       ),

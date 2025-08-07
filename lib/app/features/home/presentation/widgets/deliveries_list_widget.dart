@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muto_client_app/app/core/network/api_filter.dart';
+import 'package:muto_client_app/app/core/router/app_router.gr.dart';
 import 'package:muto_client_app/app/core/service_locator.dart';
 import 'package:muto_client_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
 import 'package:muto_client_app/app/features/home/business_logic/current_delivery/current_delivery_cubit.dart';
@@ -237,45 +238,32 @@ class _DeliveriesListWidgetState extends State<DeliveriesListWidget>
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      Expanded(
-                        child: AppButton(
-                          text: "Reject",
-                          onPressed: () {
-                            context.router.pop();
-                          },
-                          backgroundColor: Colors.red,
-                          textColor: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
+                      if (delivery.status == "assigned")
+                        ...[
+
+                      ]else ...[
+                        Expanded(
                           child: AppButton(
-                        text: "Accept",
-                        onPressed: () async {
-                          try {
-                            var courier = getIt
-                                .get<AuthenticationCubit>()
-                                .state
-                                .user
-                                ?.courier;
-                            var currentDeliveryCubit =
-                                context.read<CurrentDeliveryCubit>();
-                            var updatedDelivery = await context
-                                .read<LoadingController>()
-                                .wrapWithLoading(() async {
-                              return getIt
-                                  .get<DeliveriesRepository>()
-                                  .acceptDelivery(
-                                    delivery.id!,
-                                    courier?.id ?? 0,
-                                  );
-                            });
-                            currentDeliveryCubit.activate(updatedDelivery);
-                            _fetchDeliveries();
-                            Navigator.pop(context);
-                          } catch (e) {}
-                        },
-                      )),
+                            text: "Cancel",
+                            onPressed: () {
+                              context.router.pop();
+                            },
+                            backgroundColor: Colors.red,
+                            textColor: Colors.white,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(width: 8),
+                      if (delivery.status == "assigned") ...[
+                        Expanded(
+                            child: AppButton(
+                          text: "Track",
+                          onPressed: () async {
+                            context.router
+                                .push(DeliveryTrackingRoute(id: delivery.id));
+                          },
+                        )),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 5),
