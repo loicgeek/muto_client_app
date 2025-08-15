@@ -20,6 +20,7 @@ class AppRouter extends RootStackRouter {
           AutoRoute(page: DriverEarningsRoute.page),
           AutoRoute(page: DriverProfileRoute.page),
         ]),
+        AutoRoute(page: AddDeliveryRoute.page),
         AutoRoute(page: DeliveryTrackingRoute.page),
         AutoRoute(page: StepByStepNavigationRoute.page),
       ];

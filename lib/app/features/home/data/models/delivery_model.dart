@@ -38,6 +38,7 @@ class DeliveryModel {
   final CourierModel? courier;
   final Client? client;
   final Vehicle? vehicle;
+  final DeliveryRoute? route;
 
   DeliveryModel({
     this.id,
@@ -76,6 +77,7 @@ class DeliveryModel {
     this.courier,
     this.client,
     this.vehicle,
+    this.route,
   });
 
   factory DeliveryModel.fromJson(Map<String, dynamic> json) {
@@ -137,6 +139,8 @@ class DeliveryModel {
       client: json['client'] != null ? Client.fromJson(json['client']) : null,
       vehicle:
           json['vehicle'] != null ? Vehicle.fromJson(json['vehicle']) : null,
+      route:
+          json['route'] != null ? DeliveryRoute.fromJson(json['route']) : null,
     );
   }
 
@@ -178,6 +182,7 @@ class DeliveryModel {
       'courier': courier?.toJson(),
       'client': client?.toJson(),
       'vehicle': vehicle?.toJson(),
+      'route': route?.toJson(),
     };
   }
 }
@@ -327,6 +332,27 @@ class Vehicle {
       'status': status,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
+    };
+  }
+}
+
+class DeliveryRoute {
+  List<List<num>>? geometry;
+  DeliveryRoute({
+    this.geometry,
+  });
+  factory DeliveryRoute.fromJson(Map<String, dynamic> json) {
+    return DeliveryRoute(
+      geometry: json['geometry'] != null
+          ? (List<List<num>>.from(
+              json['geometry'].map((x) => List<num>.from(x))))
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'geometry': geometry,
     };
   }
 }

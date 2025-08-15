@@ -57,6 +57,15 @@ class DeliveriesRepository {
       throw _handleDioException(e);
     }
   }
+
+  Future<DeliveryModel> create(Map<String, dynamic> data) async {
+    try {
+      final response = await _dio.post('/deliveries', data: data);
+      return DeliveryModel.fromJson(response.data);
+    } on DioException catch (e) {
+      throw _handleDioException(e);
+    }
+  }
 }
 
 // Helper method to handle Dio exceptions

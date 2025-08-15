@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:muto_client_app/app/core/network/api_filter.dart';
+import 'package:muto_client_app/app/core/router/app_router.gr.dart';
 import 'package:muto_client_app/app/core/service_locator.dart';
 import 'package:muto_client_app/app/features/authentication/business_logic/cubit/authentication_cubit.dart';
 import 'package:muto_client_app/app/features/home/business_logic/deliveries/deliveries_cubit.dart';
@@ -49,6 +50,10 @@ class _DriverDeliveriesScreenState extends State<DriverDeliveriesScreen>
     _failedDeliveriesFilter.whereExact('client_id', user?.id);
   }
 
+  _fetchpendingOrAssignedDeliveries() {
+    _activeDeliveriesCubit.fetchDeliveries(_activeDeliveriesFilter);
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -61,6 +66,19 @@ class _DriverDeliveriesScreenState extends State<DriverDeliveriesScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppTheme.primaryBlue,
+        onPressed: () async {
+          var delivery = await context.router.push(AddDeliveryRoute());
+          if (delivery != null) {
+            _fetchpendingOrAssignedDeliveries();
+          }
+        },
+        child: const Icon(
+          Icons.add,
+          color: AppTheme.white,
+        ),
+      ),
       backgroundColor: AppTheme.lightGray,
       appBar: _buildAppBar(),
       body: Column(

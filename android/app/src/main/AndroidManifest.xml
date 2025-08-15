@@ -18,7 +18,7 @@
       
 
     <application
-        android:label="SpeedLog Driver"
+        android:label="SpeedLog Client"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

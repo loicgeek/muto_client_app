@@ -242,91 +242,28 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
   Future<void> _drawRouteWithOpenRouteService(
       LatLng pickup, LatLng dropoff) async {
     try {
-      // Choose profile based on vehicle type
-      String profile = _getRouteProfile(deliveryData?.vehicle?.type ?? 'car');
-
-      final url =
-          'https://api.openrouteservice.org/v2/directions/$profile/geojson';
-
-      var openRouteServiceApiKey =
-          "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjEwZDJmMjdiZTEyYjQ4ZDliOWE0YzYzZDgwYzE2YWUxIiwiaCI6Im11cm11cjY0In0=";
-
-      final headers = {
-        'Authorization': openRouteServiceApiKey,
-        'Content-Type': 'application/json',
-      };
-      var queryParams = {
-        "api_key": openRouteServiceApiKey,
-      };
-
-      final body = json.encode({
-        'coordinates': [
-          [pickup.longitude, pickup.latitude],
-          [dropoff.longitude, dropoff.latitude],
-        ],
-        'format': 'geojson',
-        'instructions': false,
-        'elevation': false,
-      });
-
-      final response = await Dio().post(
-        url,
-        queryParameters: queryParams,
-        data: body,
-      );
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        // Get route info
-        final properties = data['features'][0]['properties']['summary'];
-        final distance = properties['distance']; // in meters
-        final duration = properties['duration']; // in seconds
-        final coordinates =
-            data['features'][0]['geometry']['coordinates'] as List;
-        print(coordinates);
-
-        // Convert coordinates to LatLng points
-        final routePoints = coordinates.map((coord) {
-          return LatLng(coord[1], coord[0]);
-        }).toList();
-
-        setState(() {
-          polylines = [
-            Polyline(
-              points: routePoints,
-              color: Colors.blue,
-              strokeWidth: 4.0,
-            ),
-          ];
-        });
-
-        // Update delivery data with route info
-        print('Route distance: ${(distance / 1000).toStringAsFixed(2)} km');
-        print('Route duration: ${(duration / 60).toStringAsFixed(0)} minutes');
-      } else {
-        // Fallback to straight line if API fails
-        print('OpenRouteService error: ${response.statusCode}');
+      if (deliveryData?.route == null) {
         _drawFallbackRoute(pickup, dropoff);
+        return;
       }
+      // Convert coordinates to LatLng points
+      final routePoints = deliveryData?.route?.geometry?.map((coord) {
+        return LatLng(coord[1].toDouble(), coord[0].toDouble());
+      }).toList();
+
+      setState(() {
+        polylines = [
+          Polyline(
+            points: routePoints ?? [],
+            color: Colors.blue,
+            strokeWidth: 4.0,
+          ),
+        ];
+      });
     } catch (e) {
       print('Error getting route from OpenRouteService: $e');
       // Fallback to straight line
       _drawFallbackRoute(pickup, dropoff);
-    }
-  }
-
-  // Get route profile based on vehicle type
-  String _getRouteProfile(String vehicleType) {
-    switch (vehicleType.toLowerCase()) {
-      case 'bicycle':
-      case 'bike':
-        return 'cycling-regular';
-      case 'motorcycle':
-        return 'driving-car'; // OpenRouteService doesn't have motorcycle, use car
-      case 'car':
-      case 'truck':
-      default:
-        return 'driving-car';
     }
   }
 
@@ -419,49 +356,45 @@ class _DeliveryTrackingScreenState extends State<DeliveryTrackingScreen> {
         title: Text('Delivery Tracking'),
         elevation: 0,
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : Column(
+      body: Column(
+        children: [
+          // Delivery info card
+          if (deliveryData != null) _buildDeliveryInfoCard(),
+          // Map
+          Expanded(
+            child: FlutterMap(
+              mapController: mapController,
+              options: MapOptions(
+                initialCenter: LatLng(40.7128, -74.0060), // Default to NYC
+                initialZoom: 12.0,
+                minZoom: 3.0,
+                maxZoom: 18.0,
+                interactionOptions: InteractionOptions(
+                  flags: InteractiveFlag.all,
+                ),
+              ),
               children: [
-                // Delivery info card
-                if (deliveryData != null) _buildDeliveryInfoCard(),
-                // Map
-                Expanded(
-                  child: FlutterMap(
-                    mapController: mapController,
-                    options: MapOptions(
-                      initialCenter:
-                          LatLng(40.7128, -74.0060), // Default to NYC
-                      initialZoom: 12.0,
-                      minZoom: 3.0,
-                      maxZoom: 18.0,
-                      interactionOptions: InteractionOptions(
-                        flags: InteractiveFlag.all,
-                      ),
-                    ),
-                    children: [
-                      // Tile layer (OpenStreetMap)
-                      TileLayer(
-                        urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName: 'com.example.muto_client_app',
-                        maxZoom: 19,
-                      ),
+                // Tile layer (OpenStreetMap)
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.example.muto_client_app',
+                  maxZoom: 19,
+                ),
 
-                      // Polyline layer for routes
-                      PolylineLayer(
-                        polylines: polylines,
-                      ),
+                // Polyline layer for routes
+                PolylineLayer(
+                  polylines: polylines,
+                ),
 
-                      // Marker layer
-                      MarkerLayer(
-                        markers: markers,
-                      ),
-                    ],
-                  ),
+                // Marker layer
+                MarkerLayer(
+                  markers: markers,
                 ),
               ],
             ),
+          ),
+        ],
+      ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [

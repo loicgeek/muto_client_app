@@ -259,6 +259,7 @@ class _DeliveriesListWidgetState extends State<DeliveriesListWidget>
                             child: AppButton(
                           text: "Track",
                           onPressed: () async {
+                            context.pop();
                             context.router
                                 .push(DeliveryTrackingRoute(id: delivery.id));
                           },

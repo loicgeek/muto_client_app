@@ -84,13 +84,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
             _buildProfileHeader(),
             const SizedBox(height: 20),
             _buildPersonalInfoCard(),
-            const SizedBox(height: 16),
-            _buildDriverInfoCard(),
-            const SizedBox(height: 16),
-            _buildVehiclesCard(),
-            const SizedBox(height: 16),
-            _buildStatusCard(),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             _buildSettingsCard(),
             const SizedBox(height: 20),
             _buildLogoutButton(),
@@ -121,121 +115,101 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   }
 
   Widget _buildProfileHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppTheme.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
-                backgroundImage: userData['courier']['photo'] != null
-                    ? NetworkImage(userData['courier']['photo'])
-                    : null,
-                child: userData['courier']['photo'] == null
-                    ? Text(
-                        '${userData['first_name'][0]}${userData['last_name'][0]}',
-                        style: AppTheme.headingLarge.copyWith(
-                          color: AppTheme.primaryBlue,
-                          fontSize: 32,
-                        ),
-                      )
-                    : null,
-              ),
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: () {
-                    // Handle photo update
-                    _showPhotoOptions();
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryBlue,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppTheme.white, width: 2),
-                    ),
-                    child: Icon(
-                      Icons.camera_alt,
-                      color: AppTheme.white,
-                      size: 16,
-                    ),
-                  ),
-                ),
+    return BlocBuilder<AuthenticationCubit, AuthenticationState>(
+      builder: (context, state) {
+        var user = state.user!;
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppTheme.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            '${userData['first_name']} ${userData['last_name']}',
-            style: AppTheme.headingLarge,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            userData['email'],
-            style: AppTheme.bodyMedium,
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: _getStatusColor(userData['courier']['status'])
-                  .withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(userData['courier']['status']),
-                    shape: BoxShape.circle,
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
+                    backgroundImage: userData['courier']['photo'] != null
+                        ? NetworkImage(userData['courier']['photo'])
+                        : null,
+                    child: userData['courier']['photo'] == null
+                        ? Text(
+                            '${userData['first_name'][0]}${userData['last_name'][0]}',
+                            style: AppTheme.headingLarge.copyWith(
+                              color: AppTheme.primaryBlue,
+                              fontSize: 32,
+                            ),
+                          )
+                        : null,
                   ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  _getStatusText(userData['courier']['status']),
-                  style: AppTheme.bodySmall.copyWith(
-                    color: _getStatusColor(userData['courier']['status']),
-                    fontWeight: FontWeight.w600,
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Handle photo update
+                        _showPhotoOptions();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryBlue,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppTheme.white, width: 2),
+                        ),
+                        child: Icon(
+                          Icons.camera_alt,
+                          color: AppTheme.white,
+                          size: 16,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                '${user.firstName} ${user.lastName}',
+                style: AppTheme.headingLarge,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                user.email ?? "",
+                style: AppTheme.bodyMedium,
+              ),
+              const SizedBox(height: 8),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildPersonalInfoCard() {
-    return _buildInfoCard(
-      title: 'Personal Information',
-      icon: Icons.person_outline,
-      children: [
-        _buildInfoRow(
-            'Full Name', '${userData['first_name']} ${userData['last_name']}'),
-        _buildInfoRow('Email', userData['email']),
-        _buildInfoRow('Phone', userData['phone']),
-        _buildInfoRow('Address', userData['address']),
-      ],
+    return BlocBuilder<AuthenticationCubit, AuthenticationState>(
+      builder: (context, state) {
+        var user = state.user!;
+        return _buildInfoCard(
+          title: 'Personal Information',
+          icon: Icons.person_outline,
+          children: [
+            _buildInfoRow('Full Name', '${user.firstName} ${user.lastName}'),
+            _buildInfoRow('Email', user.email ?? ""),
+            _buildInfoRow('Phone', user.phone ?? ""),
+            // _buildInfoRow('Address', user.address ?? ""),
+          ],
+        );
+      },
     );
   }
 
@@ -251,130 +225,6 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
         _buildInfoRow(
             'Member Since', _formatDate(userData['courier']['created_at'])),
       ],
-    );
-  }
-
-  Widget _buildVehiclesCard() {
-    final vehicles = userData['vehicles'] as List<dynamic>;
-
-    return _buildInfoCard(
-      title: 'My Vehicles',
-      icon: Icons.directions_car_outlined,
-      children: [
-        ...vehicles.asMap().entries.map((entry) {
-          final index = entry.key;
-          final vehicle = entry.value;
-          return _buildVehicleItem(vehicle, index);
-        }).toList(),
-        const SizedBox(height: 8),
-        TextButton.icon(
-          onPressed: () {
-            // Handle add vehicle
-            _showAddVehicleDialog();
-          },
-          icon: const Icon(Icons.add),
-          label: const Text('Add Vehicle'),
-          style: TextButton.styleFrom(
-            foregroundColor: AppTheme.primaryBlue,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildVehicleItem(Map<String, dynamic> vehicle, int index) {
-    final isActive = index == activeVehicleIndex;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isActive
-            ? AppTheme.primaryBlue.withOpacity(0.1)
-            : AppTheme.lightGray,
-        borderRadius: BorderRadius.circular(8),
-        border:
-            isActive ? Border.all(color: AppTheme.primaryBlue, width: 1) : null,
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isActive
-                  ? AppTheme.primaryBlue.withOpacity(0.2)
-                  : AppTheme.white,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Icon(
-              vehicle['type'] == 'car'
-                  ? Icons.directions_car
-                  : Icons.two_wheeler,
-              color: isActive ? AppTheme.primaryBlue : AppTheme.darkGray,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${vehicle['year']} ${vehicle['make']} ${vehicle['model']}',
-                  style: AppTheme.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: isActive ? AppTheme.primaryBlue : AppTheme.black,
-                  ),
-                ),
-                Text(
-                  'License: ${vehicle['license_plate']}',
-                  style: AppTheme.bodySmall,
-                ),
-              ],
-            ),
-          ),
-          if (isActive) ...[
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryBlue,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                'Active',
-                style: AppTheme.bodySmall.copyWith(
-                  color: AppTheme.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ] else ...[
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  activeVehicleIndex = index;
-                });
-                // Update active vehicle in backend
-                _updateActiveVehicle(index);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppTheme.primaryBlue),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  'Set Active',
-                  style: AppTheme.bodySmall.copyWith(
-                    color: AppTheme.primaryBlue,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
     );
   }
 

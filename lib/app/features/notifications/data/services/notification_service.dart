@@ -89,9 +89,9 @@ class NotificationService {
   static showNotification(RemoteMessage message) {
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
-      'SPEEDLOG_DRIVE_CHANNEL',
-      'SpeedLog Driver',
-      channelDescription: 'Channel for SpeedLog driver notifications',
+      'SPEEDLOG_CLIENT_CHANNEL',
+      'SpeedLog Client',
+      channelDescription: 'Channel for SpeedLog client notifications',
       importance: Importance.max, // Changed to max for heads-up
       priority: Priority.max, // Changed to max for heads-up
       category: AndroidNotificationCategory.call, // Makes it heads-up eligible
@@ -100,19 +100,19 @@ class NotificationService {
       when: DateTime.now().millisecondsSinceEpoch,
       usesChronometer: false,
       timeoutAfter: 30000, // Auto-dismiss after 30 seconds
-      actions: <AndroidNotificationAction>[
-        AndroidNotificationAction(
-          'id_1',
-          'Accepter',
-          icon: DrawableResourceAndroidBitmap('@android:drawable/ic_menu_send'),
-        ),
-        AndroidNotificationAction(
-          'id_2',
-          'Refuser',
-          icon:
-              DrawableResourceAndroidBitmap('@android:drawable/ic_menu_delete'),
-        ),
-      ],
+      // actions: <AndroidNotificationAction>[
+      //   AndroidNotificationAction(
+      //     'id_1',
+      //     'Accepter',
+      //     icon: DrawableResourceAndroidBitmap('@android:drawable/ic_menu_send'),
+      //   ),
+      //   AndroidNotificationAction(
+      //     'id_2',
+      //     'Refuser',
+      //     icon:
+      //         DrawableResourceAndroidBitmap('@android:drawable/ic_menu_delete'),
+      //   ),
+      // ],
     );
 
     NotificationDetails notificationDetails =
